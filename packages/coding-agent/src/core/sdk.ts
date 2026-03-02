@@ -6,6 +6,8 @@ import { AgentSession } from "./agent-session.js";
 import { AuthStorage } from "./auth-storage.js";
 import { DEFAULT_THINKING_LEVEL } from "./defaults.js";
 import type { ExtensionRunner, LoadExtensionsResult, ToolDefinition } from "./extensions/index.js";
+import { createMemoryExtension } from "./extensions/memory-extension.js";
+import { createPlanExtension } from "./extensions/plan-extension.js";
 import { convertToLlm } from "./messages.js";
 import { ModelRegistry } from "./model-registry.js";
 import { findInitialModel } from "./model-resolver.js";
@@ -177,7 +179,12 @@ export async function createAgentSession(options: CreateAgentSessionOptions = {}
 	const sessionManager = options.sessionManager ?? SessionManager.create(cwd);
 
 	if (!resourceLoader) {
-		resourceLoader = new DefaultResourceLoader({ cwd, agentDir, settingsManager });
+		resourceLoader = new DefaultResourceLoader({
+			cwd,
+			agentDir,
+			settingsManager,
+			extensionFactories: [createMemoryExtension(cwd), createPlanExtension()],
+		});
 		await resourceLoader.reload();
 		time("resourceLoader.reload");
 	}

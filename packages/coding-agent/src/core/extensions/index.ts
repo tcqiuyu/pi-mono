@@ -9,6 +9,8 @@ export {
 	loadExtensionFromFactory,
 	loadExtensions,
 } from "./loader.js";
+export { createMemoryExtension } from "./memory-extension.js";
+export { createPlanExtension } from "./plan-extension.js";
 export type {
 	ExtensionErrorListener,
 	ForkHandler,

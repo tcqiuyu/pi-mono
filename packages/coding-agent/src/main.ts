@@ -18,6 +18,8 @@ import { AuthStorage } from "./core/auth-storage.js";
 import { DEFAULT_THINKING_LEVEL } from "./core/defaults.js";
 import { exportFromFile } from "./core/export-html/index.js";
 import type { LoadExtensionsResult } from "./core/extensions/index.js";
+import { createMemoryExtension } from "./core/extensions/memory-extension.js";
+import { createPlanExtension } from "./core/extensions/plan-extension.js";
 import { KeybindingsManager } from "./core/keybindings.js";
 import { ModelRegistry } from "./core/model-registry.js";
 import { resolveCliModel, resolveModelScope, type ScopedModel } from "./core/model-resolver.js";
@@ -568,6 +570,9 @@ export async function main(args: string[]) {
 	const authStorage = AuthStorage.create();
 	const modelRegistry = new ModelRegistry(authStorage, getModelsPath());
 
+	const memoryExtension = createMemoryExtension(cwd);
+	const planExtension = createPlanExtension();
+
 	const resourceLoader = new DefaultResourceLoader({
 		cwd,
 		agentDir,
@@ -582,6 +587,7 @@ export async function main(args: string[]) {
 		noThemes: firstPass.noThemes,
 		systemPrompt: firstPass.systemPrompt,
 		appendSystemPrompt: firstPass.appendSystemPrompt,
+		extensionFactories: [memoryExtension, planExtension],
 	});
 	await resourceLoader.reload();
 	time("resourceLoader.reload");
